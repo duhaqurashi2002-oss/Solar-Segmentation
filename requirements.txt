@@ -1,0 +1,13 @@
+numpy
+pandas
+matplotlib
+scipy
+astropy
+sunpy[map,net]
+reproject
+opencv-python
+scikit-image
+scikit-learn
+plotly
+ipywidgets
+nbformat
