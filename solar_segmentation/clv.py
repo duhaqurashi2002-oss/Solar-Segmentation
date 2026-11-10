@@ -1,4 +1,4 @@
-"""Centre-to-limb variation (CLV) correction, following Tähtinen et al. (2022)."""
+"""Centre-to-limb variation (CLV) correction."""
 
 import numpy as np
 import astropy.units as u
