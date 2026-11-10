@@ -29,7 +29,7 @@ The method parameters in section 2.2 default to the values used in the paper.
 
 1. **Download:** finds the first HMI 720 s slot with continuum and magnetogram data at or after `TIME_START`, then fetches AIA 1700 Å and 1600 Å within 30 s of it.
 2. **Alignment:** rotates AIA 1700 Å to solar north and reprojects AIA 1600 Å, HMI Ic and the magnetogram onto that grid.
-3. **CLV correction:** divides each image by a polynomial in μ fitted to quiet-Sun pixels (|B| < 50 G), following Tähtinen et al. (2022).
+3. **CLV correction:** divides each image by a polynomial in μ fitted to quiet-Sun pixels (|B| < 50 G).
 4. **Segmentation:**
    - **Umbra, penumbra, pore:** dark regions in smoothed HMI Ic (5σ below the quiet-Sun median); K-means on region area, minimum Ic and mean |B| splits sunspots from pores; K-means on Ic splits sunspot pixels into umbra and penumbra.
    - **Plage, network:** bright regions in smoothed AIA 1700 Å (3σ above the quiet-Sun median); K-means on region area, mean AIA 1600 Å and mean |B| splits plage from network.
