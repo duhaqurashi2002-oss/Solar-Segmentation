@@ -1,0 +1,12 @@
+numpy
+pandas
+scipy
+scikit-image
+scikit-learn
+astropy
+sunpy[net,map]
+drms
+reproject
+matplotlib
+plotly
+ipywidgets
