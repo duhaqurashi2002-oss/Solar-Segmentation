@@ -10,3 +10,4 @@ reproject
 matplotlib
 plotly
 ipywidgets
+anywidget
