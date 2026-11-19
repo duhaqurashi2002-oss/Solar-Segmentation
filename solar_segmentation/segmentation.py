@@ -73,6 +73,8 @@ def segment_spots(ic, mag, on_disk, smooth_sigma, dark_sigma, min_region, min_b,
 # 1. bright regions: smoothed AIA 1700 more than bright_sigma quiet-Sun sigmas above the quiet-Sun median
 # 2. K-means (2 clusters) on region log-area, mean AIA 1600 and mean |B|:
 #    the cluster highest in all three = plage (regions >= min_plage_size), every other bright region = network
+#    Features are clipped to their 1st-99th percentiles first, so a few extreme regions
+#    (e.g. flare kernels) can't take a cluster of their own
 def segment_bright(aia1700, aia1600, mag, non_spot, smooth_sigma, bright_sigma,
                    min_network_size, min_plage_size, seed):
     # Step 1: spots and off-disk filled with QS level so they don't pull the smoothing down
@@ -94,8 +96,10 @@ def segment_bright(aia1700, aia1600, mag, non_spot, smooth_sigma, bright_sigma,
 
     # Step 2: plage vs network
     if len(regions) >= 2:
-        F = StandardScaler().fit_transform(np.column_stack([np.log10(regions['Area (px)']),
-                                                            regions['Mean AIA 1600'], regions['Mean |B| (G)']]))
+        F = np.column_stack([np.log10(regions['Area (px)']),
+                             regions['Mean AIA 1600'], regions['Mean |B| (G)']])
+        lo, hi = np.percentile(F, [1, 99], axis=0)
+        F = StandardScaler().fit_transform(np.clip(F, lo, hi))   # clip outliers so they can't take a cluster
         lab = KMeans(n_clusters=2, init='k-means++', n_init=10, random_state=seed).fit_predict(F)
         plage_group = pd.DataFrame(F).groupby(lab).mean().sum(axis=1).idxmax()   # highest in all three
         regions.loc[(lab == plage_group) & (regions['Area (px)'].values >= min_plage_size), 'Class'] = 'plage'
@@ -105,7 +109,6 @@ def segment_bright(aia1700, aia1600, mag, non_spot, smooth_sigma, bright_sigma,
     print(f"{n} bright regions: {(regions['Class'] == 'plage').sum()} plage, "
           f"{(regions['Class'] == 'network').sum()} network")
     return plage, network, regions
-
 
 # Writes every class into one label map; later classes overwrite earlier ones
 def build_label_map(on_disk, network, plage, pore, penumbra, umbra, seg_classes):
